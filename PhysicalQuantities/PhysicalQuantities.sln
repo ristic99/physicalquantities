@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35731.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicalQuantities", "PhysicalQuantities.csproj", "{120144A4-7663-4B06-AEC9-CFDB80AC8F26}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Test_PhysicalQuantities_UnitTests", "..\_Test_PhysicalQuantities_UnitTests\_Test_PhysicalQuantities_UnitTests.csproj", "{CEE8AFCB-11AC-4358-9304-FF34E1A8950E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{120144A4-7663-4B06-AEC9-CFDB80AC8F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{120144A4-7663-4B06-AEC9-CFDB80AC8F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{120144A4-7663-4B06-AEC9-CFDB80AC8F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE8AFCB-11AC-4358-9304-FF34E1A8950E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE8AFCB-11AC-4358-9304-FF34E1A8950E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE8AFCB-11AC-4358-9304-FF34E1A8950E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE8AFCB-11AC-4358-9304-FF34E1A8950E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CEE8AFCB-11AC-4358-9304-FF34E1A8950E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3BB43FCF-BBC6-4585-9AAE-612CC772D0BA}
