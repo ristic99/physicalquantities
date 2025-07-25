@@ -1,4 +1,4 @@
-# Using PhysicalQuantity Instead of Plain Double Values`
+# Using PhysicalQuantity Instead of Plain Double Values
 
 ## The Nightmare Scenario: Plain Doubles
 
