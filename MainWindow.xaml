@@ -1,0 +1,331 @@
+﻿<Window x:Class="PhysicalQuantities.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:viewModels="clr-namespace:PhysicalQuantities.ViewModels"
+        xmlns:converters="clr-namespace:PhysicalQuantities.Core.Converters"
+        xmlns:physics="clr-namespace:PhysicalQuantities.Core.Physics"
+        xmlns:behaviors="clr-namespace:PhysicalQuantities.Core.Behaviors"
+        xmlns:enums="clr-namespace:PhysicalQuantities.Core.Enums"
+        mc:Ignorable="d"
+        Title="Clean Physical Quantity Binding with Enum Types" Height="950" Width="1200"
+        d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel}">
+
+    <Window.Resources>
+        <!-- Clean converters with enum parameter support -->
+        <converters:PhysicalQuantityConverter x:Key="DisplayConverter"/>
+
+        <!-- Styles -->
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="InputStyle">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="ResultStyle" BasedOn="{StaticResource InputStyle}">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Background" Value="LightBlue"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="DisplayStyle" BasedOn="{StaticResource InputStyle}">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Background" Value="LightGreen"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Width" Value="180"/>
+        </Style>
+
+        <Style TargetType="GroupBox" x:Key="SectionStyle">
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+
+            <!-- Title -->
+            <TextBlock Grid.Row="0" Text="Clean Physical Quantity Binding" 
+                       FontSize="24" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+            <!-- Behavior Approach  -->
+            <GroupBox Grid.Row="1" Header="Method 1: Behavior with Enum Types" Style="{StaticResource SectionStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Voltage in millivolts using Behavior -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Voltage (mV):" Style="{StaticResource LabelStyle}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputStyle}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:PhysicalQuantityBehavior 
+                                Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="mV" Style="{StaticResource LabelStyle}" FontWeight="Normal"/>
+
+                    <!-- Display original object -->
+                    <TextBox Grid.Row="0" Grid.Column="4" 
+                             Text="{Binding InputVoltage, Converter={StaticResource DisplayConverter}, ConverterParameter={x:Static enums:UnitPrefix.Milli}, Mode=OneWay}" 
+                             Style="{StaticResource DisplayStyle}"/>
+
+                    <!-- Resistance in kilohms using Behavior -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Resistance (kΩ):" Style="{StaticResource LabelStyle}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputStyle}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:PhysicalQuantityBehavior 
+                                Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="kΩ" Style="{StaticResource LabelStyle}" FontWeight="Normal"/>
+
+                    <!-- Display original object -->
+                    <TextBox Grid.Row="1" Grid.Column="4" 
+                             Text="{Binding InputResistance, Converter={StaticResource DisplayConverter}, Mode=OneWay}" 
+                             Style="{StaticResource DisplayStyle}"/>
+
+                    <!-- Action Button -->
+                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                            Content="Clear" Command="{Binding ClearCommand}" 
+                            Width="100" Height="35" Margin="10" FontSize="14"
+                            HorizontalAlignment="Left"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Method 2: Different Unit Displays -->
+            <GroupBox Grid.Row="2" Header="Method 2: Multiple Unit Displays with Enum Parameters" Style="{StaticResource SectionStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Voltage in different units -->
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <TextBlock Text="Voltage (V):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1">
+                        <TextBlock Text="Voltage (mV):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock Text="Voltage (μV):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Micro}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="3">
+                        <TextBlock Text="Voltage (kV):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <!-- Resistance in different units -->
+                    <StackPanel Grid.Row="1" Grid.Column="0">
+                        <TextBlock Text="Resistance (Ω):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1">
+                        <TextBlock Text="Resistance (mΩ):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="2">
+                        <TextBlock Text="Resistance (kΩ):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="3">
+                        <TextBlock Text="Resistance (MΩ):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource InputStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Mega}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <!-- Results Section -->
+            <GroupBox Grid.Row="3" Header="Calculated Results in Multiple Units" Style="{StaticResource SectionStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Current in different units -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Current (A):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource ResultStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Current (mA):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource ResultStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Current (μA):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource ResultStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Micro}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Text="Current (nA):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Style="{StaticResource ResultStyle}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:PhysicalQuantityBehavior 
+                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    DisplayUnit="{x:Static enums:UnitPrefix.Nano}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <!-- Information Section -->
+            <GroupBox Grid.Row="4" Header="Clean Implementation Features" Style="{StaticResource SectionStyle}">
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ First Approach: This one has bad approach regarding exponents: VoltageSquared, etc... they are hard typed and defined in PhysicalQuantityType"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ This one uses DimensionalAnalysisEngine in which we can define dimensional formulas! It is better than classic implementation as we don't have to define rules on our own."/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ Direct PhysicalQuantity observable property binding in MainViewModel using CommunityToolkit.Mvvm"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ High-performance physics rules with FrozenDictionary and packed integer keys for fast multiplication/division"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ Automatic result type detection (V÷R=A, V×I=P, P×t=E) through physics rules engine"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ All TextBoxes can show different units of same value simultaneously with real-time synchronization"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ Clean behavior syntax: "/>
+                        <Run Text="Quantity=&quot;{Binding InputVoltage, Mode=TwoWay}&quot; DisplayUnit=&quot;{x:Static physics:UnitPrefix.Milli}&quot;" FontFamily="Consolas" Background="LightYellow"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ Dual converter system: PhysicalQuantityConverter for full display, PhysicalQuantityValueConverter for numeric-only"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
+                        <Run Text="✓ Struct-based PhysicalQuantity with Value property for consistent unit conversions"/>
+                    </TextBlock>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
+</Window>
