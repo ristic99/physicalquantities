@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PhysicalQuantities.Core.Enums;
 using PhysicalQuantities.Core.Physics;
@@ -61,6 +62,14 @@ namespace PhysicalQuantities.ViewModels
             var b = new PhysicalQuantity(1, PhysicalQuantityType.Power, 1, UnitPrefix.Base);
 
             var e = new PhysicalQuantity(1, PhysicalQuantityType.Power, 2, UnitPrefix.Kilo);
+
+            var volt = new PhysicalQuantity(1, PhysicalQuantityType.Voltage, 1, UnitPrefix.Base);
+            var voltInMilivolts = new PhysicalQuantity(1000, PhysicalQuantityType.Voltage, 1, UnitPrefix.Milli);
+
+            if (volt == voltInMilivolts)
+            {
+                MessageBox.Show("Equal");
+            }
 
             var c = a - b;
 
