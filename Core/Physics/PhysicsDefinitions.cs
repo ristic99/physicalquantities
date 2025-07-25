@@ -6,8 +6,10 @@ public static class PhysicsDefinitions
 {
     public static readonly Dictionary<PhysicalQuantityType, DimensionalFormula> QuantityDimensions = new()
     {
-        // Dimensionless and base SI quantities
-        [PhysicalQuantityType.Dimensionless] = new DimensionalFormula(0,0,0,0,0,0),
+        // Dimensionless
+        [PhysicalQuantityType.Dimensionless] = new DimensionalFormula(mass: 0, length: 0, time: 0, current: 0, temperature: 0, amount: 0, luminous: 0),
+
+        // Base SI quantities
         [PhysicalQuantityType.Mass] = new DimensionalFormula(mass: 1),
         [PhysicalQuantityType.Length] = new DimensionalFormula(length: 1),
         [PhysicalQuantityType.Time] = new DimensionalFormula(time: 1),
