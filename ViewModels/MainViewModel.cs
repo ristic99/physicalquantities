@@ -68,7 +68,7 @@ namespace PhysicalQuantities.ViewModels
 
             var voltage = new PhysicalQuantity(12.0, PhysicalQuantityType.Voltage);
             var time = new PhysicalQuantity(5.0, PhysicalQuantityType.Time);
-            var error = voltage + time; // COMPILE ERROR! Can't add voltage and time
+            //var error = voltage + time; // COMPILE ERROR! Can't add voltage and time
 
             ResultCurrent = (InputVoltage / InputResistance);
         }
