@@ -111,32 +111,48 @@ public class EvilDoubleVersion
 }
 ```
 
-### **5️ Runtime vs. Compile-Time Safety**
+### **5️ Runtime Safety Through Dimensional Analysis**
 
 ```csharp
-// Doubles: mistakes caught at runtime, maybe
+// Doubles: mistakes caught at runtime, maybe never
 public double CalculateResonantFrequency(double inductance, double capacitance)
 {
     return 1.0 / (2 * Math.PI * Math.Sqrt(inductance * capacitance));
 }
 
-// Wrong input:
+// Wrong input - silently produces garbage:
 var frequency = CalculateResonantFrequency(
-    GetResistance(), // Should be inductance!
+    GetResistance(), // Should be inductance, but compiler doesn't know!
     GetCapacitance()
 );
+// Result: nonsensical value, no error, just wrong physics
 ```
 
 ```csharp
-// PhysicalQuantity: compiler enforces correctness
+// PhysicalQuantity: dimensional analysis catches errors at runtime
 public PhysicalQuantity CalculateResonantFrequency(PhysicalQuantity inductance, PhysicalQuantity capacitance)
 {
     return 1.0 / (2 * Math.PI * (inductance * capacitance).SquareRoot());
 }
 
-// Compiler error if you pass wrong types!
-var frequency = CalculateResonantFrequency(resistance, capacitance); // COMPILE ERROR
+// Wrong input - throws meaningful exception:
+var resistance = new PhysicalQuantity(10.0, PhysicalQuantityType.Resistance);
+var capacitance = new PhysicalQuantity(100e-6, PhysicalQuantityType.Capacitance);
+
+try 
+{
+    var frequency = CalculateResonantFrequency(resistance, capacitance);
+}
+catch (InvalidOperationException ex)
+{
+    // "Cannot multiply Resistance and Capacitance: dimensional mismatch"
+    // Clear error message explaining the physics violation
+}
 ```
+
+**Key Difference**: 
+- **Doubles**: Wrong units produce wrong results silently
+- **PhysicalQuantity**: Wrong units throw descriptive physics-aware exceptions
 
 ### **6️ UI Binding Catastrophe**
 
@@ -183,16 +199,17 @@ double current = motorControl.CalculateMotorCurrent(voltage, resistance);
 
 ## Summary
 
-| Aspect          | Plain Doubles       | PhysicalQuantity    |
-| --------------- | ------------------- | ------------------- |
-| Safety          | Runtime errors      | Compile-time safety |
-| Conversions     | Manual, error-prone | Automatic           |
-| Readability     | Needs comments      | Self-documenting    |
-| Maintainability | Hard                | Easy                |
-| Real-World Cost | High risk           | Reliable            |
+| Aspect          | Plain Doubles          | PhysicalQuantity           |
+| --------------- | ---------------------- | -------------------------- |
+| Safety          | Silent wrong results   | Runtime dimensional checks |
+| Conversions     | Manual, error-prone    | Automatic                  |
+| Readability     | Needs comments         | Self-documenting           |
+| Maintainability | Hard                   | Easy                       |
+| Error Detection | Often never            | Immediate with clear messages |
+| Real-World Cost | High risk              | Reliable                   |
 
-**PhysicalQuantity** = Safer, cleaner, faster, foolproof.
+**PhysicalQuantity** = Runtime-safe, self-documenting, automatic conversions, physics-aware.
 
-**Plain doubles** = 10x more verbose, 100x more error-prone, 1000x harder to maintain.
+**Plain doubles** = Silent failures, manual conversions, needs extensive documentation, physics-blind.
 
 
