@@ -58,27 +58,6 @@ namespace PhysicalQuantities.ViewModels
 
         private void Calculate()
         {
-            var a = new PhysicalQuantity(1, PhysicalQuantityType.Power, 1, UnitPrefix.Kilo);
-            var b = new PhysicalQuantity(1, PhysicalQuantityType.Power, 1, UnitPrefix.Base);
-
-            var e = new PhysicalQuantity(1, PhysicalQuantityType.Power, 2, UnitPrefix.Kilo);
-
-            var volt = new PhysicalQuantity(1, PhysicalQuantityType.Voltage, 1, UnitPrefix.Base);
-            var voltInMilivolts = new PhysicalQuantity(1000, PhysicalQuantityType.Voltage, 1, UnitPrefix.Milli);
-
-            if (volt == voltInMilivolts)
-            {
-                MessageBox.Show("Equal");
-            }
-
-            var c = a - b;
-
-            var test = DimensionalAnalysisEngine.FindAllWaysToCreate(PhysicalQuantityType.Capacitance);
-
-            var voltage = new PhysicalQuantity(12.0, PhysicalQuantityType.Voltage);
-            var time = new PhysicalQuantity(5.0, PhysicalQuantityType.Time);
-            //var error = voltage + time; // COMPILE ERROR! Can't add voltage and time
-
             ResultCurrent = (InputVoltage / InputResistance);
         }
     }
