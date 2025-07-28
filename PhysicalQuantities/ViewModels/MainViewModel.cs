@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PhysicalQuantities.Core.Enums;
 using PhysicalQuantities.Core.Physics;
+using PhysicalQuantities.Models;
 using PhysicalQuantities.ViewModels.Common;
 
 namespace PhysicalQuantities.ViewModels
@@ -17,47 +18,62 @@ namespace PhysicalQuantities.ViewModels
     //The DimensionalAnalysisEngine uses dimensional formulas to determine result types from operations.
     //WPF behaviors handle the UI binding with automatic unit conversion.
 
-
     public partial class MainViewModel : ObservableViewModel
     {
-        [ObservableProperty]
-        private PhysicalQuantity _inputVoltage = new(12.0, PhysicalQuantityType.Voltage);
+        private readonly ElectricalCircuit _circuit;
 
         [ObservableProperty]
-        private PhysicalQuantity _inputResistance = new(6.0, PhysicalQuantityType.Resistance);
+        private PhysicalQuantity _voltage;
 
         [ObservableProperty]
-        private PhysicalQuantity _resultCurrent;
+        private PhysicalQuantity _resistance;
+
+        [ObservableProperty]
+        private PhysicalQuantity _current;
 
         public MainViewModel()
         {
+            _circuit = new ElectricalCircuit(
+                new PhysicalQuantity(12.0, PhysicalQuantityType.Voltage),
+                new PhysicalQuantity(6.0, PhysicalQuantityType.Resistance)
+            );
+
+            // Initialize ViewModel properties from model
+            Voltage = _circuit.Voltage;
+            Resistance = _circuit.Resistance;
+
             CompleteInitialization();
             Calculate();
+        }
+
+        partial void OnVoltageChanged(PhysicalQuantity value)
+        {
+            if (IsInitialized)
+            {
+                _circuit.Voltage = value;
+                Calculate();
+            }
+        }
+
+        partial void OnResistanceChanged(PhysicalQuantity value)
+        {
+            if (IsInitialized)
+            {
+                _circuit.Resistance = value;
+                Calculate();
+            }
+        }
+
+        private void Calculate()
+        {
+            Current = _circuit.Current;
         }
 
         [RelayCommand]
         private void Clear()
         {
-            InputVoltage = new PhysicalQuantity(0, PhysicalQuantityType.Voltage);
-            InputResistance = new PhysicalQuantity(0, PhysicalQuantityType.Resistance);
-            ResultCurrent = new PhysicalQuantity(0, PhysicalQuantityType.Current);
-        }
-
-        partial void OnInputVoltageChanged(PhysicalQuantity value)
-        {
-            if (IsInitialized)
-                Calculate();
-        }
-
-        partial void OnInputResistanceChanged(PhysicalQuantity value)
-        {
-            if (IsInitialized)
-                Calculate();
-        }
-
-        private void Calculate()
-        {
-            ResultCurrent = (InputVoltage / InputResistance);
+            Voltage = new PhysicalQuantity(0, PhysicalQuantityType.Voltage);
+            Resistance = new PhysicalQuantity(0, PhysicalQuantityType.Resistance);
         }
     }
 }

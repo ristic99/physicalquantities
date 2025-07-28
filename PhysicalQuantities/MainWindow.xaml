@@ -6,7 +6,6 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:viewModels="clr-namespace:PhysicalQuantities.ViewModels"
         xmlns:converters="clr-namespace:PhysicalQuantities.Core.Converters"
-        xmlns:physics="clr-namespace:PhysicalQuantities.Core.Physics"
         xmlns:behaviors="clr-namespace:PhysicalQuantities.Core.Behaviors"
         xmlns:enums="clr-namespace:PhysicalQuantities.Core.Enums"
         mc:Ignorable="d"
@@ -95,7 +94,7 @@
                     <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputStyle}">
                         <i:Interaction.Behaviors>
                             <behaviors:PhysicalQuantityBehavior 
-                                Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                Quantity="{Binding Voltage, Mode=TwoWay}" 
                                 DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
                         </i:Interaction.Behaviors>
                     </TextBox>
@@ -103,7 +102,7 @@
 
                     <!-- Display original object -->
                     <TextBox Grid.Row="0" Grid.Column="4" 
-                             Text="{Binding InputVoltage, Converter={StaticResource DisplayConverter}, ConverterParameter={x:Static enums:UnitPrefix.Milli}, Mode=OneWay}" 
+                             Text="{Binding Voltage, Converter={StaticResource DisplayConverter}, ConverterParameter={x:Static enums:UnitPrefix.Milli}, Mode=OneWay}" 
                              Style="{StaticResource DisplayStyle}"/>
 
                     <!-- Resistance in kilohms using Behavior -->
@@ -111,7 +110,7 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputStyle}">
                         <i:Interaction.Behaviors>
                             <behaviors:PhysicalQuantityBehavior 
-                                Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                Quantity="{Binding Resistance, Mode=TwoWay}" 
                                 DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
                         </i:Interaction.Behaviors>
                     </TextBox>
@@ -119,7 +118,7 @@
 
                     <!-- Display original object -->
                     <TextBox Grid.Row="1" Grid.Column="4" 
-                             Text="{Binding InputResistance, Converter={StaticResource DisplayConverter}, Mode=OneWay}" 
+                             Text="{Binding Resistance, Converter={StaticResource DisplayConverter}, Mode=OneWay}" 
                              Style="{StaticResource DisplayStyle}"/>
 
                     <!-- Action Button -->
@@ -150,7 +149,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    Quantity="{Binding Voltage, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -161,7 +160,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    Quantity="{Binding Voltage, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -172,7 +171,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    Quantity="{Binding Voltage, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Micro}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -183,7 +182,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputVoltage, Mode=TwoWay}" 
+                                    Quantity="{Binding Voltage, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -195,7 +194,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    Quantity="{Binding Resistance, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -206,7 +205,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    Quantity="{Binding Resistance, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -217,7 +216,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    Quantity="{Binding Resistance, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Kilo}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -228,7 +227,7 @@
                         <TextBox Style="{StaticResource InputStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding InputResistance, Mode=TwoWay}" 
+                                    Quantity="{Binding Resistance, Mode=TwoWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Mega}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -252,7 +251,7 @@
                         <TextBox Style="{StaticResource ResultStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    Quantity="{Binding Current, Mode=OneWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Base}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -263,7 +262,7 @@
                         <TextBox Style="{StaticResource ResultStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    Quantity="{Binding Current, Mode=OneWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Milli}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -274,7 +273,7 @@
                         <TextBox Style="{StaticResource ResultStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    Quantity="{Binding Current, Mode=OneWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Micro}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -285,7 +284,7 @@
                         <TextBox Style="{StaticResource ResultStyle}">
                             <i:Interaction.Behaviors>
                                 <behaviors:PhysicalQuantityBehavior 
-                                    Quantity="{Binding ResultCurrent, Mode=OneWay}" 
+                                    Quantity="{Binding Current, Mode=OneWay}" 
                                     DisplayUnit="{x:Static enums:UnitPrefix.Nano}"/>
                             </i:Interaction.Behaviors>
                         </TextBox>
@@ -296,9 +295,6 @@
             <!-- Information Section -->
             <GroupBox Grid.Row="4" Header="Clean Implementation Features" Style="{StaticResource SectionStyle}">
                 <StackPanel>
-                    <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
-                        <Run Text="✓ First Approach: This one has bad approach regarding exponents: VoltageSquared, etc... they are hard typed and defined in PhysicalQuantityType"/>
-                    </TextBlock>
                     <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
                         <Run Text="✓ This one uses DimensionalAnalysisEngine in which we can define dimensional formulas! It is better than classic implementation as we don't have to define rules on our own."/>
                     </TextBlock>
@@ -316,7 +312,7 @@
                     </TextBlock>
                     <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
                         <Run Text="✓ Clean behavior syntax: "/>
-                        <Run Text="Quantity=&quot;{Binding InputVoltage, Mode=TwoWay}&quot; DisplayUnit=&quot;{x:Static physics:UnitPrefix.Milli}&quot;" FontFamily="Consolas" Background="LightYellow"/>
+                        <Run Text="Quantity=&quot;{Binding Voltage, Mode=TwoWay}&quot; DisplayUnit=&quot;{x:Static physics:UnitPrefix.Milli}&quot;" FontFamily="Consolas" Background="LightYellow"/>
                     </TextBlock>
                     <TextBlock TextWrapping="Wrap" FontWeight="Normal" Margin="5">
                         <Run Text="✓ Dual converter system: PhysicalQuantityConverter for full display, PhysicalQuantityValueConverter for numeric-only"/>
