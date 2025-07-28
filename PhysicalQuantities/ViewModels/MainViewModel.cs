@@ -23,13 +23,14 @@ namespace PhysicalQuantities.ViewModels
         private readonly ElectricalCircuit _circuit;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Current))]
         private PhysicalQuantity _voltage;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Current))]
         private PhysicalQuantity _resistance;
 
-        [ObservableProperty]
-        private PhysicalQuantity _current;
+        public PhysicalQuantity Current => _circuit.Current;
 
         public MainViewModel()
         {
@@ -38,12 +39,10 @@ namespace PhysicalQuantities.ViewModels
                 new PhysicalQuantity(6.0, PhysicalQuantityType.Resistance)
             );
 
-            // Initialize ViewModel properties from model
             Voltage = _circuit.Voltage;
             Resistance = _circuit.Resistance;
 
             CompleteInitialization();
-            Calculate();
         }
 
         partial void OnVoltageChanged(PhysicalQuantity value)
@@ -51,7 +50,6 @@ namespace PhysicalQuantities.ViewModels
             if (IsInitialized)
             {
                 _circuit.Voltage = value;
-                Calculate();
             }
         }
 
@@ -60,13 +58,7 @@ namespace PhysicalQuantities.ViewModels
             if (IsInitialized)
             {
                 _circuit.Resistance = value;
-                Calculate();
             }
-        }
-
-        private void Calculate()
-        {
-            Current = _circuit.Current;
         }
 
         [RelayCommand]
