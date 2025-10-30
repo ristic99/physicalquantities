@@ -1,65 +1,104 @@
-﻿using PhysicalQuantities.Core.Enums;
-using PhysicalQuantities.Core.Utils;
+﻿
+using PhysicalQuantities.Core.Enums;
 
 namespace PhysicalQuantities.Core.Physics;
 
 /// <summary>
-/// 
+/// Dimensional analysis engine with support for quantity nature and operation types
 /// </summary>
 public static class DimensionalAnalysisEngine
 {
-    private static readonly FrozenBiDictionary<PhysicalQuantityType, DimensionalFormula> QuantityDimension;
-
-    static DimensionalAnalysisEngine()
-    {
-        QuantityDimension = new FrozenBiDictionary<PhysicalQuantityType, DimensionalFormula>(
-            PhysicsDefinitions.QuantityDimensions
-        );
-    }
-
-    public static PhysicalQuantityType MultiplyQuantities(PhysicalQuantityType typeA, int exponentA, PhysicalQuantityType typeB, int exponentB)
+    public static PhysicalQuantityType MultiplyQuantities(
+        PhysicalQuantityType typeA, QuantityNature natureA, int exponentA,
+        PhysicalQuantityType typeB, QuantityNature natureB, int exponentB,
+        OperationType operationType)
     {
         var dimensionA = GetDimensionWithExponent(typeA, exponentA);
         var dimensionB = GetDimensionWithExponent(typeB, exponentB);
         var resultDimension = dimensionA * dimensionB;
-        return FindQuantityType(resultDimension);
+
+        var resultNature = DetermineResultNature(natureA, natureB, operationType);
+
+        return PhysicsDefinitions.FindQuantityType(resultDimension, resultNature, operationType);
     }
 
-    public static PhysicalQuantityType DivideQuantities(PhysicalQuantityType typeA, int exponentA, PhysicalQuantityType typeB, int exponentB)
+    public static PhysicalQuantityType DivideQuantities(
+        PhysicalQuantityType typeA, QuantityNature natureA, int exponentA,
+        PhysicalQuantityType typeB, QuantityNature natureB, int exponentB,
+        OperationType operationType)
     {
         var dimensionA = GetDimensionWithExponent(typeA, exponentA);
         var dimensionB = GetDimensionWithExponent(typeB, exponentB);
         var resultDimension = dimensionA / dimensionB;
-        return FindQuantityType(resultDimension);
+
+        // Za deljenje, priroda je uglavnom skalarna osim u posebnim slučajevima
+        var resultNature = DetermineResultNatureForDivision(natureA, natureB);
+
+        return PhysicsDefinitions.FindQuantityType(resultDimension, resultNature, operationType);
     }
 
-    private static DimensionalFormula GetDimensionWithExponent(PhysicalQuantityType type, int exponent) => QuantityDimension[type].RaiseToPower(exponent);
-
-    private static PhysicalQuantityType FindQuantityType(DimensionalFormula dimension)
+    private static DimensionalFormula GetDimensionWithExponent(PhysicalQuantityType type, int exponent)
     {
-        if (QuantityDimension.TryGetByValue(dimension, out var resultType))
-            return resultType;
-
-        throw new InvalidOperationException($"Unknown dimensional combination: {dimension.ToString()}");
+        var baseDimension = PhysicsDefinitions.GetDimensions(type);
+        return baseDimension.RaiseToPower(exponent);
     }
 
-    // Useful debugging method
+    private static QuantityNature DetermineResultNature(
+        QuantityNature a,
+        QuantityNature b,
+        OperationType operationType)
+    {
+        return operationType switch
+        {
+            OperationType.ScalarMultiply => DetermineScalarMultiplyNature(a, b),
+            OperationType.DotProduct => QuantityNature.Scalar,
+            OperationType.CrossProduct => QuantityNature.Pseudovector,
+            OperationType.Direct => QuantityNature.Scalar,
+            _ => QuantityNature.Scalar
+        };
+    }
+
+    private static QuantityNature DetermineScalarMultiplyNature(QuantityNature a, QuantityNature b)
+    {
+        // Scalar × anything = that thing
+        if (a == QuantityNature.Scalar) return b;
+        if (b == QuantityNature.Scalar) return a;
+
+        // Vector × Vector = složenije (ali za ScalarMultiply obično ne bi trebalo)
+        // Za sada vraćamo Vector kao default
+        return QuantityNature.Vector;
+    }
+
+    private static QuantityNature DetermineResultNatureForDivision(QuantityNature a, QuantityNature b)
+    {
+        // Vector / Scalar = Vector
+        if (b == QuantityNature.Scalar) return a;
+
+        // Ostalo je uglavnom Scalar
+        return QuantityNature.Scalar;
+    }
+
+    // Debugging/exploration metoda (može ostati za development)
     public static IEnumerable<string> FindAllWaysToCreate(PhysicalQuantityType target)
     {
-        var targetDimension = QuantityDimension.Forward[target];
+        var targetDimension = PhysicsDefinitions.GetDimensions(target);
         var results = new HashSet<string>();
 
-        var map = QuantityDimension.Forward;
+        // Dobij sve tipove iz Registry-ja
+        var allTypes = Enum.GetValues<PhysicalQuantityType>()
+            .Where(t => t != PhysicalQuantityType.Dimensionless);
 
-        foreach (var (typeA, dimA) in map)
+        foreach (var typeA in allTypes)
         {
+            var dimA = PhysicsDefinitions.GetDimensions(typeA);
             var dimASq = dimA.RaiseToPower(2);
 
-            foreach (var (typeB, dimB) in map)
+            foreach (var typeB in allTypes)
             {
+                var dimB = PhysicsDefinitions.GetDimensions(typeB);
                 var dimBSq = dimB.RaiseToPower(2);
 
-                // Basic
+                // Basic operations
                 if ((dimA * dimB).Equals(targetDimension))
                     results.Add($"{typeA} × {typeB} = {target}");
 
@@ -73,12 +112,12 @@ public static class DimensionalAnalysisEngine
                 if ((dimASq / dimB).Equals(targetDimension))
                     results.Add($"{typeA}² ÷ {typeB} = {target}");
 
-                // Squared B (in denominator)
+                // Squared B
                 if ((dimA / dimBSq).Equals(targetDimension))
                     results.Add($"{typeA} ÷ {typeB}² = {target}");
             }
         }
 
-        return results;
+        return results.OrderBy(s => s);
     }
 }

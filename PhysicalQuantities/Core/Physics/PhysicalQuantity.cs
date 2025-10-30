@@ -6,16 +6,37 @@ namespace PhysicalQuantities.Core.Physics;
 /// <summary>
 /// Everything derived automatically from first principles
 /// </summary>
-public readonly struct PhysicalQuantity(
-    double value,
-    PhysicalQuantityType type,
-    int exponent = 1,
-    UnitPrefix prefix = UnitPrefix.Base)
-    : IEquatable<PhysicalQuantity>
+public readonly struct PhysicalQuantity : IEquatable<PhysicalQuantity>
 {
-    public double Value { get; } = value * Math.Pow(prefix.GetMultiplier(), exponent); // Always in SI base units
-    public PhysicalQuantityType Type { get; } = type;
-    public int Exponent { get; } = exponent;
+    /// <summary>
+    /// Everything derived automatically from first principles
+    /// </summary>
+    public PhysicalQuantity(double value,
+        PhysicalQuantityType type,
+        int exponent = 1,
+        UnitPrefix prefix = UnitPrefix.Base)
+    {
+        Value = value * Math.Pow(prefix.GetMultiplier(), exponent);
+        Type = type;
+        Exponent = exponent;
+        Nature = GetNatureForType(type);
+    }
+
+    private PhysicalQuantity(double value,
+        PhysicalQuantityType type,
+        QuantityNature nature,
+        int exponent = 1)
+    {
+        Value = value;
+        Type = type;
+        Exponent = exponent;
+        Nature = nature;
+    }
+
+    public double Value { get; } // Always in SI base units
+    public PhysicalQuantityType Type { get; }
+    public int Exponent { get; }
+    public QuantityNature Nature { get; }
 
     public double GetValueIn(UnitPrefix prefix)
         => Value / Math.Pow(prefix.GetMultiplier(), Exponent);
@@ -47,7 +68,11 @@ public readonly struct PhysicalQuantity(
             return new PhysicalQuantity(resultValue, newType, newExponent);
         }
 
-        var resultType = DimensionalAnalysisEngine.MultiplyQuantities(a.Type, a.Exponent, b.Type, b.Exponent);
+        var resultType = DimensionalAnalysisEngine.MultiplyQuantities(
+            a.Type, a.Nature, a.Exponent,
+            b.Type, b.Nature, b.Exponent,
+            OperationType.ScalarMultiply  // ← Kontekst!
+        );
         return new PhysicalQuantity(resultValue, resultType);
     }
 
@@ -62,7 +87,11 @@ public readonly struct PhysicalQuantity(
             return new PhysicalQuantity(resultValue, newType, newExponent);
         }
 
-        var resultType = DimensionalAnalysisEngine.DivideQuantities(a.Type, a.Exponent, b.Type, b.Exponent);
+        var resultType = DimensionalAnalysisEngine.DivideQuantities(
+            a.Type, a.Nature, a.Exponent,
+            b.Type, b.Nature, b.Exponent,
+            OperationType.ScalarMultiply  // ← Dodao sve parametre
+        );
         return new PhysicalQuantity(resultValue, resultType);
     }
 
@@ -71,6 +100,38 @@ public readonly struct PhysicalQuantity(
 
     public static PhysicalQuantity operator /(PhysicalQuantity a, double scalar)
         => new PhysicalQuantity(a.Value / scalar, a.Type, a.Exponent);
+
+    // Dot product: Vector · Vector → Scalar
+    public PhysicalQuantity Dot(PhysicalQuantity other)
+    {
+        if (Nature != QuantityNature.Vector || other.Nature != QuantityNature.Vector)
+            throw new InvalidOperationException("Dot product requires two vectors");
+
+        var resultValue = Value * other.Value; // Pojednostavljeno
+        var resultType = DimensionalAnalysisEngine.MultiplyQuantities(
+            Type, Nature, Exponent,
+            other.Type, other.Nature, other.Exponent,
+            OperationType.DotProduct  // ← Ključno!
+        );
+
+        return new PhysicalQuantity(resultValue, resultType, QuantityNature.Scalar);
+    }
+
+    // Cross product: Vector × Vector → Pseudovector
+    public PhysicalQuantity Cross(PhysicalQuantity other)
+    {
+        if (Nature != QuantityNature.Vector || other.Nature != QuantityNature.Vector)
+            throw new InvalidOperationException("Cross product requires two vectors");
+
+        var resultValue = Value * other.Value; // Pojednostavljeno
+        var resultType = DimensionalAnalysisEngine.MultiplyQuantities(
+            Type, Nature, Exponent,
+            other.Type, other.Nature, other.Exponent,
+            OperationType.CrossProduct  // ← Ključno!
+        );
+
+        return new PhysicalQuantity(resultValue, resultType, QuantityNature.Pseudovector);
+    }
 
     public bool IsCompatibleForAddition(PhysicalQuantity other)
         => Type == other.Type && Exponent == other.Exponent;
@@ -102,4 +163,21 @@ public readonly struct PhysicalQuantity(
 
     private static PhysicalQuantityType AdjustTypeForExponent(PhysicalQuantityType type, int exponent)
         => exponent == 0 ? PhysicalQuantityType.Dimensionless : type;
+
+
+    private static QuantityNature GetNatureForType(PhysicalQuantityType type)
+    {
+        return type switch
+        {
+            // Vectors
+            PhysicalQuantityType.Force => QuantityNature.Vector,
+            PhysicalQuantityType.ElectricField => QuantityNature.Vector,
+
+            // Pseudovectors
+            PhysicalQuantityType.MagneticField => QuantityNature.Pseudovector,
+
+            // Everything else is Scalar (default)
+            _ => QuantityNature.Scalar
+        };
+    }
 }
