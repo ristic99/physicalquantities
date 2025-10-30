@@ -20,24 +20,27 @@ public readonly struct DimensionalFormula(
 
     private static DimensionalFormula Dimensionless => new();
 
-    public static DimensionalFormula operator *(DimensionalFormula a, DimensionalFormula b)
-        => Combine(a, b, add: true);
-
-    public static DimensionalFormula operator /(DimensionalFormula a, DimensionalFormula b)
-        => Combine(a, b, add: false);
-
-    private static DimensionalFormula Combine(DimensionalFormula a, DimensionalFormula b, bool add)
-    {
-        return new DimensionalFormula(
-            mass: add ? a._mass + b._mass : a._mass - b._mass,
-            length: add ? a._length + b._length : a._length - b._length,
-            time: add ? a._time + b._time : a._time - b._time,
-            current: add ? a._current + b._current : a._current - b._current,
-            temperature: add ? a._temperature + b._temperature : a._temperature - b._temperature,
-            amount: add ? a._amount + b._amount : a._amount - b._amount,
-            luminous: add ? a._luminous + b._luminous : a._luminous - b._luminous
+    public static DimensionalFormula operator *(DimensionalFormula a, DimensionalFormula b) =>
+        new(
+            mass: a._mass + b._mass,
+            length: a._length + b._length,
+            time: a._time + b._time,
+            current: a._current + b._current,
+            temperature: a._temperature + b._temperature,
+            amount: a._amount + b._amount,
+            luminous: a._luminous + b._luminous
         );
-    }
+
+    public static DimensionalFormula operator /(in DimensionalFormula a, in DimensionalFormula b) =>
+        new(
+            mass: a._mass - b._mass,
+            length: a._length - b._length,
+            time: a._time - b._time,
+            current: a._current - b._current,
+            temperature: a._temperature - b._temperature,
+            amount: a._amount - b._amount,
+            luminous: a._luminous - b._luminous
+        );
 
     public DimensionalFormula RaiseToPower(int exponent)
     {
@@ -71,14 +74,21 @@ public readonly struct DimensionalFormula(
     public override string ToString()
     {
         var parts = new List<string>(7);
-        if (_mass != 0) parts.Add(_mass == 1 ? "Mass" : $"Mass^{_mass}");
-        if (_length != 0) parts.Add(_length == 1 ? "Length" : $"Length^{_length}");
-        if (_time != 0) parts.Add(_time == 1 ? "Time" : $"Time^{_time}");
-        if (_current != 0) parts.Add(_current == 1 ? "ElectricCurrent" : $"ElectricCurrent^{_current}");
-        if (_temperature != 0) parts.Add(_temperature == 1 ? "Temperature" : $"Temperature^{_temperature}");
-        if (_amount != 0) parts.Add(_amount == 1 ? "AmountOfSubstance" : $"AmountOfSubstance^{_amount}");
-        if (_luminous != 0) parts.Add(_luminous == 1 ? "LuminousIntensity" : $"LuminousIntensity^{_luminous}");
+
+        Add("Mass", _mass);
+        Add("Length", _length);
+        Add("Time", _time);
+        Add("ElectricCurrent", _current);
+        Add("Temperature", _temperature);
+        Add("AmountOfSubstance", _amount);
+        Add("LuminousIntensity", _luminous);
 
         return parts.Count == 0 ? "Dimensionless" : string.Join(" ", parts);
+
+        void Add(string name, sbyte exponent)
+        {
+            if (exponent == 0) return;
+            parts.Add(exponent == 1 ? name : $"{name}^{exponent}");
+        }
     }
 }

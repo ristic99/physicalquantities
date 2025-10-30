@@ -1,5 +1,5 @@
 ﻿using PhysicalQuantities.Core.Enums;
-using System.Collections.Frozen;
+using PhysicalQuantities.Core.Utils;
 
 namespace PhysicalQuantities.Core.Physics;
 
@@ -8,13 +8,13 @@ namespace PhysicalQuantities.Core.Physics;
 /// </summary>
 public static class DimensionalAnalysisEngine
 {
-    private static readonly FrozenDictionary<PhysicalQuantityType, DimensionalFormula> QuantityToDimension;
-    private static readonly FrozenDictionary<DimensionalFormula, PhysicalQuantityType> DimensionToQuantity;
+    private static readonly FrozenBiDictionary<PhysicalQuantityType, DimensionalFormula> QuantityDimension;
 
     static DimensionalAnalysisEngine()
     {
-        QuantityToDimension = PhysicsDefinitions.QuantityDimensions.ToFrozenDictionary();
-        DimensionToQuantity = PhysicsDefinitions.QuantityDimensions.ToDictionary(kvp => kvp.Value, kvp => kvp.Key).ToFrozenDictionary();
+        QuantityDimension = new FrozenBiDictionary<PhysicalQuantityType, DimensionalFormula>(
+            PhysicsDefinitions.QuantityDimensions
+        );
     }
 
     public static PhysicalQuantityType MultiplyQuantities(PhysicalQuantityType typeA, int exponentA, PhysicalQuantityType typeB, int exponentB)
@@ -33,11 +33,11 @@ public static class DimensionalAnalysisEngine
         return FindQuantityType(resultDimension);
     }
 
-    private static DimensionalFormula GetDimensionWithExponent(PhysicalQuantityType type, int exponent) => QuantityToDimension[type].RaiseToPower(exponent);
+    private static DimensionalFormula GetDimensionWithExponent(PhysicalQuantityType type, int exponent) => QuantityDimension[type].RaiseToPower(exponent);
 
     private static PhysicalQuantityType FindQuantityType(DimensionalFormula dimension)
     {
-        if (DimensionToQuantity.TryGetValue(dimension, out var resultType))
+        if (QuantityDimension.TryGetByValue(dimension, out var resultType))
             return resultType;
 
         throw new InvalidOperationException($"Unknown dimensional combination: {dimension.ToString()}");
@@ -46,33 +46,39 @@ public static class DimensionalAnalysisEngine
     // Useful debugging method
     public static IEnumerable<string> FindAllWaysToCreate(PhysicalQuantityType target)
     {
-        var targetDimension = QuantityToDimension[target];
-        var results = new List<string>();
+        var targetDimension = QuantityDimension.Forward[target];
+        var results = new HashSet<string>();
 
-        foreach (var (typeA, dimA) in QuantityToDimension)
+        var map = QuantityDimension.Forward;
+
+        foreach (var (typeA, dimA) in map)
         {
-            foreach (var (typeB, dimB) in QuantityToDimension)
+            var dimASq = dimA.RaiseToPower(2);
+
+            foreach (var (typeB, dimB) in map)
             {
-                // Basic operations
+                var dimBSq = dimB.RaiseToPower(2);
+
+                // Basic
                 if ((dimA * dimB).Equals(targetDimension))
                     results.Add($"{typeA} × {typeB} = {target}");
 
                 if ((dimA / dimB).Equals(targetDimension))
                     results.Add($"{typeA} ÷ {typeB} = {target}");
 
-                // Squared operations
-                var dimASquared = dimA.RaiseToPower(2);
-                if ((dimASquared * dimB).Equals(targetDimension))
+                // Squared A
+                if ((dimASq * dimB).Equals(targetDimension))
                     results.Add($"{typeA}² × {typeB} = {target}");
 
-                if ((dimASquared / dimB).Equals(targetDimension))
+                if ((dimASq / dimB).Equals(targetDimension))
                     results.Add($"{typeA}² ÷ {typeB} = {target}");
 
-                if ((dimA / dimB.RaiseToPower(2)).Equals(targetDimension))
+                // Squared B (in denominator)
+                if ((dimA / dimBSq).Equals(targetDimension))
                     results.Add($"{typeA} ÷ {typeB}² = {target}");
             }
         }
 
-        return results.Distinct();
+        return results;
     }
 }
