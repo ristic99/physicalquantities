@@ -10,10 +10,15 @@ public enum PhysicalQuantityType
     Time,
     Temperature,
 
+    // Geometric quantities
+    Area,           // m² (square meter)
+    Volume,         // m³ (cubic meter)
+
     // Mechanical quantities
     Force,          // N (Newton)
     Energy,         // J (Joule)
     Power,          // W (Watt)
+    Torque,         // N⋅m (Newton meter)
 
     // Electrical quantities
     Voltage,        // V (Volt)
